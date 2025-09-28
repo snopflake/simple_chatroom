@@ -1,28 +1,32 @@
 import 'dart:async';
 
-/// Kontrak notifikasi (agar mudah ganti ke FCM).
+/// ===== PUSH NOTIFICATION (FCM) =====
+/// TODO[4]: Buat `FcmNotificationService implements NotificationService`
+///   - flutter pub add firebase_messaging
+///   - iOS: requestPermission() wajib
+///   - subscribeGlobalTopic(): FirebaseMessaging.instance.subscribeToTopic('chatroom')
+///   - onMessage: FirebaseMessaging.onMessage
+///   - main(): set handler background (onBackgroundMessage) dan init permission
+/// TODO[5]: Atur rules App Check/keamanan jika diperlukan
+
 abstract class NotificationService {
   Future<void> requestPermission();
   Future<void> subscribeGlobalTopic();
   Stream<String> get onMessage; // payload sederhana
 }
 
-/// Implementasi mock.
-/// TODO(Firebase): buat FcmNotificationService untuk implementasi asli.
 class MockNotificationService implements NotificationService {
   final _ctrl = StreamController<String>.broadcast();
 
   @override
-  Future<void> requestPermission() async {/* noop in mock */}
+  Future<void> requestPermission() async {/* noop */}
 
   @override
-  Future<void> subscribeGlobalTopic() async {/* noop in mock */}
+  Future<void> subscribeGlobalTopic() async {/* noop */}
 
   @override
   Stream<String> get onMessage => _ctrl.stream;
 
-  // Helper opsional untuk simulasi
-  void simulateIncoming(String text) {
-    _ctrl.add(text);
-  }
+  // Utility untuk simulasi manual saat demo
+  void simulateIncoming(String text) => _ctrl.add(text);
 }

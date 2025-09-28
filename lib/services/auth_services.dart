@@ -1,6 +1,16 @@
 import 'dart:async';
 import 'dart:math';
 
+/// ===== AUTH SERVICE =====
+/// TODO[2]: Buat class `FirebaseAuthService implements AuthService`
+///   - flutter pub add firebase_auth
+///   - map:
+///       signIn   -> FirebaseAuth.instance.signInWithEmailAndPassword(...)
+///       signUp   -> FirebaseAuth.instance.createUserWithEmailAndPassword(...)
+///       signOut  -> FirebaseAuth.instance.signOut()
+///       stream   -> FirebaseAuth.instance.authStateChanges()
+///   - AppUser bisa diisi dari User.uid & User.email
+
 class AppUser {
   final String uid;
   final String email;
@@ -16,17 +26,18 @@ abstract class AuthService {
   Future<void> signOut();
 }
 
+/// Mock: berjalan tanpa backend (untuk skeleton & demo UI)
 class MockAuthService implements AuthService {
   final _controller = StreamController<AppUser?>.broadcast();
   AppUser? _user;
 
-  MockAuthService(); // <-- tidak perlu add(null) di sini
+  MockAuthService();
 
-  // ✅ KIRIM state saat ini dulu, lalu teruskan stream berikutnya
+  // Penting: emit state awal agar AuthWrapper tidak "loading" selamanya.
   @override
   Stream<AppUser?> get authStateChanges async* {
-    yield _user;               // emit nilai awal (null saat belum login)
-    yield* _controller.stream; // teruskan update selanjutnya
+    yield _user;               // awal (null jika belum login)
+    yield* _controller.stream; // berikutnya
   }
 
   @override
@@ -37,6 +48,7 @@ class MockAuthService implements AuthService {
     _user = AppUser(uid: _randId(), email: email);
     _controller.add(_user);
     return _user;
+    // TODO[2]: di FirebaseAuthService, return dari credential.user
   }
 
   @override
@@ -44,12 +56,14 @@ class MockAuthService implements AuthService {
     _user = AppUser(uid: _randId(), email: email);
     _controller.add(_user);
     return _user;
+    // TODO[2]: di FirebaseAuthService, return dari credential.user
   }
 
   @override
   Future<void> signOut() async {
     _user = null;
     _controller.add(null);
+    // TODO[2]: FirebaseAuth.instance.signOut()
   }
 
   String _randId() =>

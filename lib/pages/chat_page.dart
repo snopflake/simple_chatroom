@@ -4,6 +4,8 @@ import '../services/firestore_services.dart';
 import '../services/notification_services.dart';
 import '../widgets/message_bubble.dart';
 
+/// TODO[3]: Setelah punya FirebaseFirestoreService, ganti mockservice di main.dart.
+/// TODO[4]: Saat FCM aktif, tampilkan snackbar ketika ada onMessage & atur background handler di main().
 class ChatPage extends StatefulWidget {
   const ChatPage({
     super.key,
@@ -27,11 +29,10 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    // TODO(Firebase): di implementasi FCM, request permission & subscribe topic.
     widget.notif.requestPermission();
     widget.notif.subscribeGlobalTopic();
 
-    // Contoh listener notifikasi (mock/FCM)
+    // Listener notifikasi (mock/FCM)
     widget.notif.onMessage.listen((payload) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Notif: $payload')));

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_services.dart';
 
+/// TODO[2]: Setelah punya FirebaseAuthService, di main.dart ganti dari MockAuthService ke FirebaseAuthService.
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.auth});
   final AuthService auth;
@@ -35,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         await widget.auth.signUp(email, pass);
       }
-      // Success → Stream authStateChanges di AuthWrapper akan mengarahkan ke ChatPage.
+      // NOTE: AuthWrapper akan auto-navigate ke ChatPage lewat stream auth.
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));

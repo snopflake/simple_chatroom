@@ -1,7 +1,18 @@
 import 'dart:async';
 import 'auth_services.dart';
 
-/// Model pesan sederhana (UI-friendly).
+/// ===== FIRESTORE (CHAT DB) =====
+/// TODO[3]: Buat `FirebaseFirestoreService implements FirestoreService`
+///   - flutter pub add cloud_firestore
+///   - Collection: 'messages'
+///   - Document fields: { senderId, senderEmail, text, timestamp(serverTimestamp) }
+///   - messagesStream():
+///       FirebaseFirestore.instance.collection('messages')
+///         .orderBy('timestamp', descending: true)
+///         .snapshots().map((qs) => qs.docs.map(...).toList())
+///   - sendMessage(text):
+///       add({ ..., 'timestamp': FieldValue.serverTimestamp() })
+
 class Message {
   final String id;
   final String senderId;
@@ -18,14 +29,12 @@ class Message {
   });
 }
 
-/// Kontrak database chat.
 abstract class FirestoreService {
   Stream<List<Message>> messagesStream(); // real-time
   Future<void> sendMessage(String text);
 }
 
-/// Implementasi mock (in-memory).
-/// TODO(Firebase): buat FirebaseFirestoreService yang implement kontrak ini.
+/// Mock: in-memory list agar UI hidup tanpa backend
 class MockFirestoreService implements FirestoreService {
   final AuthService _auth;
   final _ctrl = StreamController<List<Message>>.broadcast();
@@ -51,8 +60,7 @@ class MockFirestoreService implements FirestoreService {
       timestamp: DateTime.now(),
     );
     _messages.add(msg);
-    // urutkan dari yang lama ke baru; UI bisa reverse bila perlu
-    _messages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    _messages.sort((a, b) => a.timestamp.compareTo(b.timestamp)); // old->new
     _ctrl.add(List<Message>.unmodifiable(_messages));
   }
 }
